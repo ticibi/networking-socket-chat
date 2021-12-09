@@ -1,7 +1,10 @@
 import socket
 import threading
+import logging
 
 from config import LOCALHOST, PORT, BUFFER
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Client:
@@ -14,7 +17,7 @@ class Client:
         self.socket.connect((LOCALHOST, PORT))
         self.socket.send(self.username.encode())
         server_name = self.socket.recv(BUFFER).decode()
-        print('connected to', server_name)
+        logging.debug('connected to', server_name)
 
     def receive(self):
         while True:
@@ -23,7 +26,7 @@ class Client:
                 if incoming:
                     print(incoming)
             except Exception:
-                print('disconnected')
+                logging.debug('disconnected')
                 self.socket.close()
                 break
             
@@ -33,7 +36,7 @@ class Client:
                 message = input()
                 self.socket.send(message.encode())
             except Exception:
-                print('disconnected')
+                logging.debug('disconnected')
                 self.socket.close()
                 break
 

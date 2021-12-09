@@ -1,8 +1,11 @@
 from datetime import datetime
 import socket
 import threading
+import logging
 
 from config import LOCALHOST, PORT, BUFFER
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class Server:
@@ -14,8 +17,8 @@ class Server:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((LOCALHOST, PORT))
         self.socket.listen()
-        print('[server] ONLINE')
-        print(f'[time] {datetime.utcnow()}')
+        logging.debug('[server] ONLINE')
+        logging.debug(f'[time] {datetime.utcnow()}')
 
     def receive(self):
         while True:
@@ -24,7 +27,7 @@ class Server:
             username = conn.recv(BUFFER).decode()
             self.clients.append(conn)
             self.usernames.append(username)
-            print(f'[server] received connection from {conn}')
+            logging.debug(f'[server] received connection from {conn}')
             self.broadcast_message(conn, f'[server] {username} connected')
             thread = threading.Thread(target=self.handle_connection, args=(conn,))
             thread.start()
@@ -42,7 +45,7 @@ class Server:
                 break
 
     def broadcast_message(self, conn, message):
-        print(message)
+        logging.debug(message)
         for client in self.clients:
             if client != conn:
                 client.send(message.encode())
